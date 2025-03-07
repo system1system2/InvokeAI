@@ -6,32 +6,21 @@ setlocal
 call .venv\Scripts\activate.bat
 set INVOKEAI_ROOT=.
 
-echo Do you want to generate images using the
-echo 1. command-line
-echo 2. browser-based UI
-echo 3. run textual inversion training
-echo 4. merge models (diffusers type only)
-echo 5. re-run the configure script to download new models
-echo 6. open the developer console
-echo 7. command-line help
-set /P restore="Please enter 1, 2, 3, 4, 5, 6 or 7: [2] "
-if not defined restore set restore=2
-IF /I "%restore%" == "1" (
-    echo Starting the InvokeAI command-line..
-    python .venv\Scripts\invokeai.exe %*
-) ELSE IF /I "%restore%" == "2" (
+:start
+echo Desired action:
+echo 1. Generate images with the browser-based interface
+echo 2. Open the developer console
+echo 3. Command-line help
+echo Q - Quit
+echo.
+echo To update, download and run the installer from https://github.com/invoke-ai/InvokeAI/releases/latest
+echo.
+set /P choice="Please enter 1-4, Q: [1] "
+if not defined choice set choice=1
+IF /I "%choice%" == "1" (
     echo Starting the InvokeAI browser-based UI..
-    python .venv\Scripts\invokeai.exe --web %*
-) ELSE IF /I "%restore%" == "3" (
-    echo Starting textual inversion training..
-    python .venv\Scripts\invokeai-ti.exe --gui %*
-) ELSE IF /I "%restore%" == "4" (
-    echo Starting model merging script..
-    python .venv\Scripts\invokeai-merge.exe --gui %*
-) ELSE IF /I "%restore%" == "5" (
-    echo Running invokeai-configure...
-    python .venv\Scripts\invokeai-configure.exe %*
-) ELSE IF /I "%restore%" == "6" (
+    python .venv\Scripts\invokeai-web.exe %*
+) ELSE IF /I "%choice%" == "2" (
     echo Developer Console
     echo Python command is:
     where python
@@ -43,14 +32,23 @@ IF /I "%restore%" == "1" (
     echo *************************
     echo *** Type `exit` to quit this shell and deactivate the Python virtual environment ***
     call cmd /k
-) ELSE IF /I "%restore%" == "7" (
+) ELSE IF /I "%choice%" == "3" (
     echo Displaying command line help...
-    python .venv\Scripts\invokeai.exe --help %*
+    python .venv\Scripts\invokeai-web.exe --help %*
     pause
     exit /b
+) ELSE IF /I "%choice%" == "q" (
+    echo Goodbye!
+    goto ending
 ) ELSE (
     echo Invalid selection
     pause
     exit /b
 )
+goto start
+
 endlocal
+pause
+
+:ending
+exit /b
